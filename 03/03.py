@@ -27,6 +27,15 @@ def parse(file):
     return data
 
 
+class Rectangle(object):
+    def __init__(self, offset, size):
+        self.top_left = (offset[0] + 1, offset[1] +1)
+        self.bottom_right = (self.top_left[0] + size[0], self.top_left[1] + size[1])
+
+    def intersection(self, other):
+        pass
+
+
 def solve_1(data):
     # Build quadrants
     quads = []
@@ -36,7 +45,7 @@ def solve_1(data):
             for h in range(size[1]):
                 y = offset[1] + h
                 quads.append((x, y))
-    print(quads[0:30])
+
     # Check for overlap
     seen = set()
     duplicates = set()
