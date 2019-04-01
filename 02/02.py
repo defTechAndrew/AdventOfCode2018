@@ -12,7 +12,7 @@ class Day02Test(unittest.TestCase):
         data = parse(open("02.txt"))
         answer = solve_2(data)
         print('Answer 02', answer)
-        self.assertEqual(0, answer)
+        self.assertEqual('krdmtuqjgwfoevnaboxglzjph', answer)
 
 
 def parse(file):
@@ -34,7 +34,11 @@ def solve_1(data):
 
 
 def solve_2(data):
-    return None
+    for line in data:
+        for compare in data:
+            differences = [x for x, y in zip(line, compare) if x != y]
+            if len(differences) == 1:
+                return line.replace(differences[0], '')
 
 
 if __name__ == '__main__':
