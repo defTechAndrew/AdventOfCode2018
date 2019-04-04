@@ -12,7 +12,7 @@ class Day03Test(unittest.TestCase):
         data = parse(open("03.txt"))
         answer = solve_2(data)
         print('Answer 02', answer)
-        self.assertEqual(0, answer)
+        self.assertEqual(412, answer)
 
 
 def parse(file):
@@ -23,24 +23,21 @@ def parse(file):
         items = line.split(' ')
         offset = tuple(map(int, items[-2][:-1].split(',')))
         size = tuple(map(int, items[-1].split('x')))
-        data.append((items[0][1:], offset, size))
+        data.append((int(items[0][1:]), offset, size))
     return data
 
 
 class Rectangle(object):
     def __init__(self, parameters):
         self.index, offset, size = parameters
-        self.top_left = Point(offset[0] + 1, offset[1] + 1)
-        self.bottom_right = Point(self.top_left[0] + size[0], self.top_left[1] + size[1])
+        self.top_left = Point(offset[0], offset[1])
+        self.bottom_right = Point(offset[0] + size[0], offset[1] + size[1])
 
     def intersection(self, other):
-        if self.top_left >= other.top_left:
-            if self.top_left <= other.bottom_right:
-                return True
-        if self.bottom_right <= other.bottom_right:
-            if self.bottom_right >= other.top_left:
-                return True
-        return False
+        return not (self.top_left.x > other.bottom_right.x or
+                    self.bottom_right.x < other.top_left.x or
+                    self.top_left.y > other.bottom_right.y or
+                    self.bottom_right.y < other.top_left.y)
 
     def __repr__(self):
         return 'Rectangle {0} {1}x{2}'.format(self.index, self.top_left, self.bottom_right)
@@ -50,24 +47,6 @@ class Point(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-
-    def __eq__(self, other):
-        return True if self.x == other.y and self.y == other.y else False
-
-    def __gt__(self, other):
-        return True if self.x > other.x and self.y > other.y else False
-
-    def __ge__(self, other):
-        return True if self.x >= other.x and self.y >= other.y else False
-
-    def __lt__(self, other):
-        return True if self.x < other.x and self.y < other.y else False
-
-    def __le__(self, other):
-        return True if self.x <= other.x and self.y <= other.y else False
-
-    def __getitem__(self, item):
-        return self.y if item else self.x
 
     def __repr__(self):
         return '({0},{1})'.format(self.x, self.y)
@@ -98,10 +77,9 @@ def solve_1(data):
 def solve_2(data):
     swatches = tuple(map(Rectangle, data))
     for swatch in swatches:
-        intersections = [swatch.intersection(x) for x in swatches]
-        if not all(intersections):
-            return swatch
-    return None
+        intersections = [swatch.intersection(x) for x in swatches if swatch != x]
+        if not any(intersections):
+            return swatch.index
 
 
 if __name__ == '__main__':
